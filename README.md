@@ -163,6 +163,16 @@ A major update with comprehensive redesign and modern React patterns implementat
 
 [Read more](https://tailadmin.com/docs/update-logs/react) on the changelog.
 
+
+### fast run 
+
+```
+npm install
+vite build
+npm run dev --force
+```
+
+
 ## License
 
 Refer to our [LICENSE](https://tailadmin.com/license) page for more information.

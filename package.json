@@ -41,6 +41,7 @@
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@eslint/js": "^9.19.0",
+    "@preact/signals-react-transform": "^0.7.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19.0.12",
