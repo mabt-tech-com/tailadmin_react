@@ -2,7 +2,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import { BoxIcon } from "../../icons";
+import {BoxIcon, DotSmallIcon} from "../../icons";
 
 export default function Buttons() {
   return (
@@ -74,6 +74,10 @@ export default function Buttons() {
             </Button>
           </div>
         </ComponentCard>
+
+
+
+
         {/* Outline Button with Start Icon */}
         <ComponentCard title="Outline Button with Left Icon">
           <div className="flex items-center gap-5">
@@ -92,7 +96,19 @@ export default function Buttons() {
               Button Text
             </Button>
           </div>
+
+
+          <Button variant="outline" size="sm" >
+            <DotSmallIcon className="size-5" />
+            Live Server Button
+          </Button>
+
+
         </ComponentCard>{" "}
+
+
+
+
         {/* Outline Button with Start Icon */}
         <ComponentCard title="Outline Button with Right Icon">
           <div className="flex items-center gap-5">

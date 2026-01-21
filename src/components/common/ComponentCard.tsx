@@ -1,3 +1,8 @@
+// src/components/common/ComponentCard.tsx
+import Badge from "../ui/badge/Badge.tsx";
+import {DotSmallIcon} from "../../icons";
+import Button from "../ui/button/Button.tsx";
+
 interface ComponentCardProps {
   title: string;
   children: React.ReactNode;
@@ -21,9 +26,9 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
           {title}
         </h3>
         {desc && (
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {desc}
-          </p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {desc}
+            </p>
         )}
       </div>
 

@@ -59,7 +59,19 @@ import { ReactComponent as AiIcon } from "./ai-icon.svg?react";
 import { ReactComponent as CartIcon } from "./cart-icon.svg?react";
 import { ReactComponent as CallIcon } from "./call-icon.svg?react";
 
+// custom icons added :
+import { ReactComponent as EyeViewIcon } from "./eyeViewIcon.svg?react";
+import { ReactComponent as RadioTowerIcon } from "./radioTowerIcon.svg?react";
+import { ReactComponent as DotSmallIcon } from "./dotSmall_Icon.svg?react";
+import { ReactComponent as LoadIcon } from "./load-icon.svg?react";
+
 export {
+  EyeViewIcon,
+  RadioTowerIcon,
+  DotSmallIcon,
+  LoadIcon,
+
+
   CallIcon,
   CartIcon,
   AiIcon,

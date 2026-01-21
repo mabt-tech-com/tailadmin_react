@@ -9,12 +9,22 @@ export default function TooltipExample() {
       <ComponentCard title="Default Tooltip">
         <DefaultTooltip />
       </ComponentCard>
+
       <ComponentCard title="White and Dark Tooltip">
         <WhiteAndDarkTooltip />
       </ComponentCard>
+
       <ComponentCard title="Tooltip Placement">
         <TooltipPlacement />
       </ComponentCard>
+
+
+        <ComponentCard title="White and Dark Tooltip">
+
+            <WhiteAndDarkTooltip />
+
+        </ComponentCard>
+
     </div>
   );
 }

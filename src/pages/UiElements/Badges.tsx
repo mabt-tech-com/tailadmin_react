@@ -1,6 +1,6 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import Badge from "../../components/ui/badge/Badge";
-import { PlusIcon } from "../../icons";
+import {DotSmallIcon, PlusIcon, UserIcon} from "../../icons";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
 
@@ -65,6 +65,8 @@ export default function Badges() {
             </Badge>
           </div>
         </ComponentCard>
+
+
         <ComponentCard title="Light Background with Left Icon">
           <div className="flex flex-wrap gap-4 sm:items-center sm:justify-center">
             <Badge variant="light" color="primary" startIcon={<PlusIcon />}>
@@ -90,6 +92,10 @@ export default function Badges() {
             </Badge>
           </div>
         </ComponentCard>
+
+
+
+
         <ComponentCard title="Solid Background with Left Icon">
           <div className="flex flex-wrap gap-4 sm:items-center sm:justify-center">
             <Badge variant="solid" color="primary" startIcon={<PlusIcon />}>
@@ -165,7 +171,41 @@ export default function Badges() {
             </Badge>
           </div>
         </ComponentCard>
+
+      {/* custom component */}
+
+
+        <ComponentCard title="Light Background with Left Icon">
+          <div className="flex flex-wrap gap-4 sm:items-center sm:justify-center">
+
+
+            <Badge variant="light" color="success" startIcon={<DotSmallIcon/>}>
+              Live Server Badge
+            </Badge>{" "}
+
+            <hr/>
+
+
+            <Badge variant="light" color="success" startIcon={<UserIcon/>}>
+              Active User
+            </Badge>{" "}
+
+          </div>
+
+
+        </ComponentCard>
+
+
+        {/*
+
+            // pulse animate & effect :
+             className="w-2 h-2 rounded-full animate-pulse" style="background-color: rgb(16, 185, 129); opacity: 1;"
+
+           */}
+
+
       </div>
     </div>
-  );
+  )
+      ;
 }
