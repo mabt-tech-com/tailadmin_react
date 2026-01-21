@@ -1,7 +1,5 @@
 // src/components/common/ComponentCard.tsx
-import Badge from "../ui/badge/Badge.tsx";
-import {DotSmallIcon} from "../../icons";
-import Button from "../ui/button/Button.tsx";
+
 
 interface ComponentCardProps {
   title: string;

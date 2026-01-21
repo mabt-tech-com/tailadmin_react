@@ -2,7 +2,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import {BoxIcon, DotSmallIcon} from "../../icons";
+import {BoxIcon, DotSmallIcon, GroupIcon} from "../../icons";
 
 export default function Buttons() {
   return (
@@ -82,38 +82,40 @@ export default function Buttons() {
         <ComponentCard title="Outline Button with Left Icon">
           <div className="flex items-center gap-5">
             <Button
-              size="sm"
-              variant="outline"
-              startIcon={<BoxIcon className="size-5" />}
+                size="sm"
+                variant="outline"
+                startIcon={<BoxIcon className="size-5"/>}
             >
               Button Text
             </Button>
             <Button
-              size="md"
-              variant="outline"
-              startIcon={<BoxIcon className="size-5" />}
+                size="md"
+                variant="outline"
+                startIcon={<BoxIcon className="size-5"/>}
             >
               Button Text
             </Button>
           </div>
 
 
-          <Button variant="outline" size="sm" >
-            <DotSmallIcon className="size-5" />
+          <Button variant="outline" size="sm">
+            <DotSmallIcon className="size-5"/>
             Live Server Button
           </Button>
 
+          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
+            <GroupIcon className="text-gray-800 size-6 dark:text-white/90"/>
+          </div>
+
 
         </ComponentCard>{" "}
-
-
 
 
         {/* Outline Button with Start Icon */}
         <ComponentCard title="Outline Button with Right Icon">
           <div className="flex items-center gap-5">
             <Button
-              size="sm"
+                size="sm"
               variant="outline"
               endIcon={<BoxIcon className="size-5" />}
             >
