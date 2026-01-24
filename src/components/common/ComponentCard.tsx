@@ -3,6 +3,7 @@ interface ComponentCardProps {
   children: React.ReactNode;
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
+  headerRight?: React.ReactNode; // optional dropdown/actions in header
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -10,6 +11,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
+  headerRight,
 }) => {
   return (
     <div
@@ -17,20 +19,28 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     >
       {/* Card Header */}
       <div className="px-6 py-5">
-        <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-          {title}
-        </h3>
-        {desc && (
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {desc}
-          </p>
-        )}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
+              {title}
+            </h3>
+            {desc && (
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {desc}
+              </p>
+            )}
+          </div>
+
+          {headerRight ? <div className="shrink-0">{headerRight}</div> : null}
+        </div>
       </div>
 
       {/* Card Body */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-        <div className="space-y-6">{children}</div>
-      </div>
+      {children && (
+        <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+          <div className="space-y-6">{children}</div>
+        </div>
+      )}
     </div>
   );
 };
