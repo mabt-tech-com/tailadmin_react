@@ -79,9 +79,6 @@ export default function ApiKeyTable() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             API Keys ({countLabel})
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage your API keys for programmatic access to Qall Voice AI.
-          </p>
         </div>
 
         <div className="flex items-center gap-3 justify-end">

@@ -107,9 +107,14 @@ const DashboardMetrics: React.FC<Props> = ({
                 {/* Progress (conditional) */}
                 {item.progress !== null && (
                   <div className="mt-2 flex flex-col items-end gap-1 mt-6">
-                    <span className="text-sm font-medium text-success-500">
+                    {item.title === "Call Success" ? 
+                    <div className="mb-4"></div>
+                    : 
+                     <span className="text-sm font-medium text-success-500">
                       {item.progress}%
                     </span>
+                    
+                    }
 
                     <div className="h-1.5 w-12 rounded-full bg-gray-200 dark:bg-gray-800">
                       <div

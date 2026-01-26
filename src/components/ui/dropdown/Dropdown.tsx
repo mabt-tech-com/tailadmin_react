@@ -1,6 +1,12 @@
 import type React from "react";
 import { useEffect, useRef } from "react";
-import { cn } from "../../../utils";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(...inputs));
+}
+
 
 interface DropdownProps {
   isOpen: boolean;

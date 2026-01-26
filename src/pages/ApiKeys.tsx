@@ -7,7 +7,7 @@ export default function ApiKeys() {
   return (
     <div>
       <PageMeta title="API Keys" description="Manage your Qall API keys" />
-      <PageBreadcrumb pageTitle="API Keys" />
+      <PageBreadcrumb pageTitle="API Keys" description="Manage your API keys for programmatic access to Qall Voice AI." />
       <ApiKeyTable />
     </div>
   );

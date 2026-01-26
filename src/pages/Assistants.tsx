@@ -66,6 +66,25 @@ export default function AssistantsPage() {
 
       editHref: "/assistants/a3",
     },
+    {
+      id: "a4",
+      name: "In-hours Reception",
+      description: "Collects details & routes tickets to inbox.",
+      status: "Active",
+
+      llmProvider: "Anthropic",
+      llmModel: "claude-3.5-sonnet",
+
+      sttProvider: "Deepgram",
+      sttModel: "nova-2",
+      language: "en-GB",
+
+      ttsProvider: "ElevenLabs",
+      ttsModel: "turbo-v2",
+      voice: "James",
+
+      editHref: "/assistants/a3",
+    },
   ];
 
   const handleDelete = (a: AssistantPreview) => {

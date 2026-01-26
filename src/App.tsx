@@ -15,6 +15,7 @@ import Assistants from "./pages/Assistants";
 import Organizations from "./pages/Organization";
 import Dashboard from "./pages/Dashboard";
 import Assistant from "./pages/Assistant"
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -30,10 +31,12 @@ export default function App() {
               <Route path="/call" element={<Call />} />
               <Route path="/phonenumbers" element={<PhoneNumbers />} />
               <Route path="/organization" element={<Organizations />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/files" element={<FileManager />} />
               <Route path="/apikeys" element={<ApiKeys />} />
               <Route path="/assistant" element={<Assistant />} />
+
             </Route>
           </Routes>
         </Router>

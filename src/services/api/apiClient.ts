@@ -25,11 +25,11 @@ export function createApiClient(options: ApiClientOptions = {}) {
       // IMPORTANT: send session cookie to FastAPI
       credentials: "include",
       headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         "Content-Type": "application/json",
         ...(init.headers ?? {}),
       },
     });
-
     const contentType = res.headers.get("content-type") || "";
     const isJson = contentType.includes("application/json");
 

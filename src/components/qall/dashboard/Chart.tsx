@@ -19,7 +19,7 @@ export default function DashboardChart({ points }: Props) {
 
   const options: ApexOptions = {
     legend: { show: false, position: "top", horizontalAlign: "left" },
-    colors: ["#465FFF"],
+    colors: ["#0fb86a"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       height: 220,

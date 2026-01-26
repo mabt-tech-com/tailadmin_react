@@ -1,7 +1,7 @@
 // src/hooks/useApiKeys.ts
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { APIKeyItem, APIKeyPermissions } from "../types/api/apiKeys";
-import { apiKeysService } from "./../services/api/apiService";
+import { apiKeysService } from "../services/api/apiKeysService";
 
 export function useApiKeys() {
   const [items, setItems] = useState<APIKeyItem[]>([]);
