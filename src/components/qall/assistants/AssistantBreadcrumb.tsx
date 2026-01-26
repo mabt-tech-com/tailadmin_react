@@ -30,10 +30,12 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
             {pageTitle}
           </li>
         </ol>
-        <Button>
-        <Plus size={20} />
-        Add Assistant
-      </Button>
+        <Link to="/assistant">
+          <Button>
+            <Plus size={20} />
+            Add Assistant
+          </Button>
+        </Link>
       </nav>
     </div>
   );
