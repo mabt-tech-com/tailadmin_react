@@ -1,9 +1,10 @@
 interface ComponentCardProps {
-  title: string;
+  title: any;
   children: React.ReactNode;
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
   headerRight?: React.ReactNode; // optional dropdown/actions in header
+  id? : string;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -12,10 +13,12 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   className = "",
   desc = "",
   headerRight,
+  id = "",
 }) => {
   return (
     <div
       className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}
+      id={`${id}`}
     >
       {/* Card Header */}
       <div className="px-6 py-5">

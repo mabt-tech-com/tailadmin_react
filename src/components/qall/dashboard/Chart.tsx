@@ -1,7 +1,6 @@
 // src/components/qall/dashboard/Chart.tsx
 import { ApexOptions } from "apexcharts";
 import Chart from "react-apexcharts";
-import React from "react";
 import type { DailyCallPoint } from "../../../types/api/dashboard";
 
 type Props = {

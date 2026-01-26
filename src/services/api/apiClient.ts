@@ -20,13 +20,15 @@ export function createApiClient(options: ApiClientOptions = {}) {
   const baseUrl = options.baseUrl ?? "";
 
   async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
+
     const res = await fetch(`${baseUrl}${path}`, {
       ...init,
       // IMPORTANT: send session cookie to FastAPI
       credentials: "include",
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(init.headers ?? {}),
       },
     });

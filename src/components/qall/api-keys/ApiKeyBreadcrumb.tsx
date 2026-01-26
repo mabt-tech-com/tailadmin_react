@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import Button from "../../common/Button";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import AddApiKeyModal from "./AddApiKeyModal";
 import NewApiKeySuccessModal from "./ApiKeySuccessModal";
 import { APIKeyPermissions, CreateAPIKeyResponse } from "../../../types/api/apiKeys";

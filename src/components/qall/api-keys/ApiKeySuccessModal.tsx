@@ -3,7 +3,7 @@
 
 import Button from "../../common/Button";
 import { Modal } from "../../ui/modal";
-import { Check, Copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useState } from "react";
 
 type Props = {

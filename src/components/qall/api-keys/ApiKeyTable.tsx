@@ -25,7 +25,6 @@ export default function ApiKeyTable() {
     items,
     loading,
     error,
-    refresh,
     create,
     setActive,
     remove,
