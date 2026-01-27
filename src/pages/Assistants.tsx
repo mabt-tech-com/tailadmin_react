@@ -1,100 +1,57 @@
 import PageMeta from "../components/common/PageMeta";
 import Breadcrumb from "../components/qall/assistants/AssistantBreadcrumb";
-
-import AssistantCard, {
-  AssistantPreview,
-} from "../components/qall/assistants/AssistantCard";
+import AssistantCard from "../components/qall/assistants/AssistantCard";
+import { useAssistants } from "../hooks/useAssistantsApi";
+import type { AssistantPreview } from "../types/api/assistants";
 
 export default function AssistantsPage() {
-  // Dummy data (replace with API later)
-  const assistants: AssistantPreview[] = [
-    {
-      id: "a1",
-      name: "Assistant-1",
-      description: "Order support agent for German customers.",
-      status: "Active",
+  const { assistants, loading, error, remove } = useAssistants({
+    per_page: 12,
+    page: 1,
+    sort_by: "name",
+    sort_order: "asc",
+  });
 
-      llmProvider: "OpenAI",
-      llmModel: "gpt-4.1-mini",
-
-      sttProvider: "Deepgram",
-      sttModel: "nova-2",
-      language: "de-DE",
-
-      ttsProvider: "ElevenLabs",
-      ttsModel: "turbo-v2",
-      voice: "Charlotte",
-
-      editHref: "/assistants/a1",
-      // iconUrl: "./images/brand/brand-07.svg",
-    },
-    {
-      id: "a2",
-      name: "Sales Assistant",
-      description: "Lead qualification + appointment booking.",
-      status: "Active",
-
-      llmProvider: "OpenAI",
-      llmModel: "gpt-4.1",
-
-      sttProvider: "OpenAI",
-      sttModel: "whisper-large-v3",
-      language: "en-US",
-
-      ttsProvider: "OpenAI",
-      ttsModel: "gpt-4o-mini-tts",
-      voice: "Alloy",
-
-      editHref: "/assistants/a2",
-    },
-    {
-      id: "a3",
-      name: "After-hours Reception",
-      description: "Collects details & routes tickets to inbox.",
-      status: "Inactive",
-
-      llmProvider: "Anthropic",
-      llmModel: "claude-3.5-sonnet",
-
-      sttProvider: "Deepgram",
-      sttModel: "nova-2",
-      language: "en-GB",
-
-      ttsProvider: "ElevenLabs",
-      ttsModel: "turbo-v2",
-      voice: "James",
-
-      editHref: "/assistants/a3",
-    },
-  ];
-
-  const handleDelete = (a: AssistantPreview) => {
-    // wire to real delete later
-    // eslint-disable-next-line no-alert
-    alert(`Delete assistant: ${a.name}`);
+  const handleDelete = async (a: AssistantPreview) => {
+    const ok = window.confirm(`Delete assistant "${a.name}"?`);
+    if (!ok) return;
+    try {
+      await remove(a.id);
+    } catch (e: any) {
+      // eslint-disable-next-line no-alert
+      alert(e?.message ?? "Failed to delete assistant");
+    }
   };
 
   return (
     <div>
-      <PageMeta
-        title="Assistants "
-        description="Manage AI assistants"
-      />
-
+      <PageMeta title="Assistants" description="Manage AI assistants" />
       <Breadcrumb pageTitle="Assistants" />
 
-        {/* Header row */}
-
-        {/* Cards grid (max 3 columns) */}
+      {loading ? (
+        <div className="min-h-[200px] rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div className="text-sm text-gray-600 dark:text-gray-300">Loading assistants…</div>
+        </div>
+      ) : error ? (
+        <div className="min-h-[200px] rounded-2xl border border-red-200 bg-red-50 px-5 py-7 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+          {error}
+        </div>
+      ) : assistants.length === 0 ? (
+        <div className="min-h-[220px] rounded-2xl border border-gray-200 bg-white px-5 py-10 text-center dark:border-gray-800 dark:bg-white/[0.03]">
+          <div className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            No assistants yet
+          </div>
+          <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Create an assistant in the backend for now (UI create comes next).
+          </div>
+        </div>
+      ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 pt-2">
           {assistants.map((a) => (
-            <AssistantCard
-              key={a.id}
-              assistant={a}
-              onDelete={handleDelete}
-            />
+            <AssistantCard key={a.id} assistant={a} onDelete={handleDelete} />
           ))}
         </div>
+      )}
     </div>
   );
 }
