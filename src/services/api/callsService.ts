@@ -1,5 +1,4 @@
 // src/services/api/callsService.ts
-
 import {
     CallResponse,
     TranscriptResponse,
@@ -10,29 +9,44 @@ import {
     GetCallsParams
 } from '../../types/api/calls';
 
-const API_BASE_URL = 'http://localhost:9000/api/v1';
+//const API_BASE_URL = 'http://localhost:9000/api/v1';
+//const API_BASE_URL = 'http://qall.io/api/v1';
 
-//const API_BASE_URL = 'https://qall.io/api/v1';
+// Your static Bearer token - hardcoded as provided
+//const STATIC_BEARER_TOKEN = 'qall_uvpprwa6bmvsz31l227oft6vggrj0yau';
+
+
+// Update this line in src/services/api/callsService.ts
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://qall.io/api/v1'; //'http://localhost:9000/api/v1';
+
+const STATIC_BEARER_TOKEN = import.meta.env.VITE_API_TOKEN || 'qall_uvpprwa6bmvsz31l227oft6vggrj0yau';
+
+
+
+// Update this line in src/services/api/callsService.ts
+/*const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000/api/v1';
+
+const STATIC_BEARER_TOKEN = import.meta.env.VITE_API_TOKEN || 'qall_uvpprwa6bmvsz31l227oft6vggrj0yau';*/
 
 class CallsService {
     private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-        const token = localStorage.getItem('auth_token');
-
+        // Always use the static Bearer token
         const headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` }),
+            'Authorization': `Bearer ${STATIC_BEARER_TOKEN}`,
             ...options.headers,
         };
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
             headers,
-            credentials: 'include',
         });
 
         if (!response.ok) {
-            throw new Error(`API error: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error(`API Error [${response.status}]:`, errorText);
+            throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
         return response.json();
@@ -54,10 +68,6 @@ class CallsService {
         return this.request<CallResponse[]>(endpoint);
     }
 
-
-
-
-
     // Export calls
     async exportCalls(format: 'csv' | 'json', params?: GetCallsParams): Promise<Blob> {
         const queryParams = new URLSearchParams({ format });
@@ -72,9 +82,8 @@ class CallsService {
 
         const response = await fetch(`${API_BASE_URL}/calls/export?${queryParams.toString()}`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                'Authorization': `Bearer ${STATIC_BEARER_TOKEN}`,
             },
-            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -83,9 +92,6 @@ class CallsService {
 
         return response.blob();
     }
-
-
-
 
     // Get analytics
     async getAnalytics(period: '1d' | '7d' | '30d' | '90d' = '7d'): Promise<CallAnalyticsResponse> {
@@ -142,9 +148,8 @@ class CallsService {
 
         const response = await fetch(`${API_BASE_URL}/calls/${callId}/transcripts/export?${queryParams.toString()}`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                'Authorization': `Bearer ${STATIC_BEARER_TOKEN}`,
             },
-            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -171,6 +176,18 @@ class CallsService {
     // Search calls
     async searchCalls(query: string, limit: number = 50): Promise<CallResponse[]> {
         return this.request<CallResponse[]>(`/calls/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+    }
+
+    // Test API connection
+    async testConnection(): Promise<boolean> {
+        try {
+            // Try to get calls with a minimal query to test connection
+            await this.getCalls({ limit: 1 });
+            return true;
+        } catch (error) {
+            console.error('API Connection test failed:', error);
+            return false;
+        }
     }
 }
 

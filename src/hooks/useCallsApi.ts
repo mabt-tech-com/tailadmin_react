@@ -1,6 +1,6 @@
 // src/hooks/useCallsApi.ts
-import { useState, useCallback } from 'react';
-import callsService from '../services/api/callsService.ts';
+import { useState, useCallback, useEffect } from 'react';
+import callsService from '../services/api/callsService';
 import {
     CallResponse,
     CallAnalyticsResponse,
@@ -9,14 +9,24 @@ import {
     GetCallsParams
 } from '../types/api/calls';
 
-
-
 export const useCallsApi = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
+    // Test API connection on mount
+    useEffect(() => {
+        const testConnection = async () => {
+            try {
+                const connected = await callsService.testConnection();
+                setConnectionStatus(connected ? 'connected' : 'disconnected');
+            } catch {
+                setConnectionStatus('disconnected');
+            }
+        };
 
-
+        testConnection();
+    }, []);
 
     const getCalls = useCallback(async (params?: GetCallsParams): Promise<CallResponse[]> => {
         setLoading(true);
@@ -33,10 +43,6 @@ export const useCallsApi = () => {
         }
     }, []);
 
-
-
-
-
     const exportCalls = useCallback(async (format: 'csv' | 'json', params?: GetCallsParams): Promise<Blob> => {
         setLoading(true);
         setError(null);
@@ -51,9 +57,6 @@ export const useCallsApi = () => {
             setLoading(false);
         }
     }, []);
-
-
-
 
     const getAnalytics = useCallback(async (period: '1d' | '7d' | '30d' | '90d' = '7d'): Promise<CallAnalyticsResponse> => {
         setLoading(true);
@@ -70,9 +73,6 @@ export const useCallsApi = () => {
         }
     }, []);
 
-
-
-
     const getCallCount = useCallback(async (params?: GetCallsParams): Promise<CallCountResponse> => {
         setLoading(true);
         setError(null);
@@ -87,9 +87,6 @@ export const useCallsApi = () => {
             setLoading(false);
         }
     }, []);
-
-
-
 
     const getCall = useCallback(async (callId: number): Promise<CallResponse> => {
         setLoading(true);
@@ -106,9 +103,6 @@ export const useCallsApi = () => {
         }
     }, []);
 
-
-
-
     const getCallStats = useCallback(async (): Promise<CallStatsResponse> => {
         setLoading(true);
         setError(null);
@@ -123,9 +117,6 @@ export const useCallsApi = () => {
             setLoading(false);
         }
     }, []);
-
-
-
 
     const updateCallMetadata = useCallback(async (callId: number, metadata: Record<string, any>): Promise<CallResponse> => {
         setLoading(true);
@@ -142,10 +133,6 @@ export const useCallsApi = () => {
         }
     }, []);
 
-
-
-
-
     const getCallTranscripts = useCallback(async (callId: number, speaker?: string, includeInterim: boolean = false): Promise<any[]> => {
         setLoading(true);
         setError(null);
@@ -161,9 +148,6 @@ export const useCallsApi = () => {
         }
     }, []);
 
-
-
-
     const getCallRecordings = useCallback(async (callId: number, recordingType?: string): Promise<any[]> => {
         setLoading(true);
         setError(null);
@@ -178,9 +162,6 @@ export const useCallsApi = () => {
             setLoading(false);
         }
     }, []);
-
-
-
 
     const searchCalls = useCallback(async (query: string, limit: number = 50): Promise<CallResponse[]> => {
         setLoading(true);
@@ -200,6 +181,7 @@ export const useCallsApi = () => {
     return {
         loading,
         error,
+        connectionStatus,
         getCalls,
         exportCalls,
         getAnalytics,
@@ -211,11 +193,4 @@ export const useCallsApi = () => {
         getCallRecordings,
         searchCalls,
     };
-
-
-
-
-
-
-
 };
