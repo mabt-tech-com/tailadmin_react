@@ -142,11 +142,10 @@ export default function RecentCallsTable() {
   const isRefreshing = loading && !!data; // initial load vs refresh
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-      {/* Header bar (match Jinja layout: left title, right live + refresh) */}
-      <div className="flex items-center justify-between gap-4 px-6 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex-shrink-0">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Recent Calls
           </h3>
         </div>
@@ -160,7 +159,7 @@ export default function RecentCallsTable() {
           <button
             onClick={() => void refetch()}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 disabled:opacity-60 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 disabled:opacity-60 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
             aria-label="Refresh recent calls"
             title="Refresh"
           >
@@ -209,7 +208,7 @@ export default function RecentCallsTable() {
         <>
           <div className="max-w-full overflow-x-auto custom-scrollbar">
             <Table>
-              <TableHeader className="border-t border-gray-100 dark:border-white/[0.05]">
+              <TableHeader className="">
                 <TableRow>
                   {[
                     { key: "assistant_name", label: "Assistant" },
@@ -220,7 +219,7 @@ export default function RecentCallsTable() {
                     <TableCell
                       key={key}
                       isHeader
-                      className="px-6 py-4 text-left border border-gray-100 dark:border-white/[0.05]"
+                      className="px-6 py-4 text-left border-y border-gray-100 dark:border-white/[0.05]"
                     >
                       <div
                         className="flex items-center justify-between cursor-pointer select-none"
@@ -229,38 +228,6 @@ export default function RecentCallsTable() {
                         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                           {label}
                         </p>
-                        <button className="flex flex-col gap-0.5" aria-label={`Sort by ${label}`}>
-                          <svg
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "asc" ? "text-brand-500" : ""
-                            }`}
-                            width="8"
-                            height="5"
-                            viewBox="0 0 8 5"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                          <svg
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "desc" ? "text-brand-500" : ""
-                            }`}
-                            width="8"
-                            height="5"
-                            viewBox="0 0 8 5"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </button>
                       </div>
                     </TableCell>
                   ))}
@@ -287,7 +254,7 @@ export default function RecentCallsTable() {
                       className="border-b border-gray-100 dark:border-white/[0.05] hover:bg-gray-50/60 dark:hover:bg-white/[0.03]"
                     >
                       {/* Assistant cell (avatar + name + to_phone_number) */}
-                      <TableCell className="px-6 py-4 border border-gray-100 dark:border-white/[0.05]">
+                      <TableCell className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.05]">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center dark:text-white font-semibold text-sm">
                             {initial}
@@ -305,12 +272,12 @@ export default function RecentCallsTable() {
                       </TableCell>
 
                       {/* Caller */}
-                      <TableCell className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
+                      <TableCell className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
                         {call.customer_phone_number}
                       </TableCell>
 
                       {/* Status */}
-                      <TableCell className="px-6 py-4 text-sm border border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
+                      <TableCell className="px-6 py-4 text-sm border-b border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
                         <span className="inline-flex items-center gap-2">
                           <Badge variant={badge.variant} color={badge.color}>
                             {badge.showPulse && (
@@ -322,12 +289,12 @@ export default function RecentCallsTable() {
                       </TableCell>
 
                       {/* Started */}
-                      <TableCell className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
+                      <TableCell className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
                         {formatStartedAt(call.started_at)}
                       </TableCell>
 
                       {/* Actions */}
-                      <TableCell className="px-6 py-4 text-sm border border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
+                      <TableCell className="px-6 py-4 text-sm border-b border-gray-100 dark:border-white/[0.05] whitespace-nowrap">
                         <div className="flex items-center justify-end gap-3">
                           <a
                             href={`/calls/${call.id}`}

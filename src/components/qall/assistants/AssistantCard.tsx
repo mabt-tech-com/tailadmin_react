@@ -67,8 +67,8 @@ const AssistantCard: React.FC<Props> = ({ assistant, onDelete }) => {
       {/* Top */}
       <div className="flex items-start justify-between gap-4 pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-start gap-4 min-w-0">
-          <div className="h-15 w-18 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden dark:border-gray-800 dark:bg-white/[0.03]">
-            <Bot size={25} className="text-gray-500 dark:text-gray-400" />
+          <div className="h-15 w-15 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden dark:border-gray-800 dark:bg-white/[0.03]">
+            <Bot size={27} className="text-gray-500 dark:text-gray-400" />
           </div>
 
           <div className="min-w-0">
@@ -115,7 +115,7 @@ const AssistantCard: React.FC<Props> = ({ assistant, onDelete }) => {
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Link
           to={editHref}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-200 dark:hover:bg-white/5"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border bg-gray-50/50 dark:bg-gray-800/50 border-gray-300 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 px-4 py-2.5 text-sm font-medium transition"
         >
           <Pencil className="h-4 w-4" />
           Edit

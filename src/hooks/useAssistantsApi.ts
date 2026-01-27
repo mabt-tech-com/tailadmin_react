@@ -6,7 +6,8 @@ import type {
   AssistantDetailResponse,
   CreateAssistantResponse,
   CreateAssistantErrorResponse,
-  CreateAssistantFormInput
+  CreateAssistantFormInput,
+  Assistant
 } from "../types/api/assistants";
 
 
@@ -27,7 +28,7 @@ export function useAssistants(initialParams: AssistantsListParams = {}) {
     setLoading(true);
     setError(null);
     try {
-      const res = await assistantsService.list(params);
+      const res = await assistantsService.listPreview(params); // ✅ preview
       setData(res);
     } catch (e: any) {
       setError(e?.message ?? "Failed to load assistants");
@@ -58,7 +59,7 @@ export function useAssistants(initialParams: AssistantsListParams = {}) {
     [data?.items?.length, load, params.page],
   );
 
-  return {
+ return {
     params,
     setParams,
     data,
@@ -67,11 +68,17 @@ export function useAssistants(initialParams: AssistantsListParams = {}) {
     error,
     reload: load,
     remove,
+    pagination: {
+      total: data?.total ?? 0,
+      page: data?.page ?? (params.page ?? 1),
+      per_page: data?.per_page ?? (params.per_page ?? 24),
+      pages: data?.pages ?? 1,
+    },
   };
 }
 
 export function useAssistantDetail(assistantId: number | null | undefined) {
-  const [data, setData] = useState<AssistantDetailResponse | null>(null);
+  const [data, setData] = useState<Assistant | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,9 +102,7 @@ export function useAssistantDetail(assistantId: number | null | undefined) {
 
   return {
     data,
-    assistant: data?.assistant ?? null,
-    recentCalls: data?.recent_calls ?? [],
-    telephonyProvider: data?.telephony_provider ?? null,
+    assistant: data,
     loading,
     error,
     reload: load,
@@ -111,16 +116,13 @@ export function useSaveAssistant() {
   const save = useCallback(async (assistantId: number | null, input: CreateAssistantFormInput) => {
     setLoading(true);
     setError(null);
-
     try {
       if (!assistantId) {
-        // create
-        return await assistantsService.create(input);
+        const created = await assistantsService.create(input);
+        return { success: true, assistant_id: created.id };
       }
-
-      // update
-      await assistantsService.update(assistantId, input);
-      return { success: true, assistant_id: assistantId };
+      const updated = await assistantsService.update(assistantId, input);
+      return { success: true, assistant_id: updated.id };
     } catch (e: any) {
       setError(e?.message ?? "Failed to save assistant");
       throw e;

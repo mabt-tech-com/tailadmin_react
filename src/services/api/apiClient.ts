@@ -1,5 +1,3 @@
-// src/services/apiClient.ts
-
 export class ApiError extends Error {
   status: number;
   body?: unknown;
@@ -21,20 +19,30 @@ export function createApiClient(options: ApiClientOptions = {}) {
 
   async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
+    const hasBody = init.body !== undefined && init.body !== null;
+
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = {};
+
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    // only set content-type when we send JSON
+    if (hasBody && !isFormData) headers["Content-Type"] = "application/json";
+
+    // allow caller overrides
+    const mergedHeaders = {
+      ...headers,
+      ...(init.headers as any),
+    };
 
     const res = await fetch(`${baseUrl}${path}`, {
       ...init,
-      // IMPORTANT: send session cookie to FastAPI
       credentials: "include",
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
-        ...(init.headers ?? {}),
-      },
+      headers: mergedHeaders,
     });
+
     const contentType = res.headers.get("content-type") || "";
     const isJson = contentType.includes("application/json");
-
     const body = isJson ? await res.json().catch(() => null) : await res.text().catch(() => "");
 
     if (!res.ok) {
@@ -51,7 +59,5 @@ export function createApiClient(options: ApiClientOptions = {}) {
 }
 
 export const apiClient = createApiClient({
-  // If your React is served from same domain as FastAPI, keep ""
-  // If different, set: baseUrl: import.meta.env.VITE_API_BASE_URL
   baseUrl: "http://localhost:9000",
 });

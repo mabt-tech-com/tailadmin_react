@@ -30,7 +30,7 @@ export type AssistantsListResponse = {
   page: number;
   per_page: number;
   total: number;
-  total_pages: number;
+  pages: number;
 };
 
 export type AssistantPhoneNumber = {

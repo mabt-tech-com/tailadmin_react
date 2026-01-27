@@ -4,7 +4,7 @@ import type {
   AssistantsListResponse,
   AssistantDetailResponse,
   CreateAssistantFormInput,
-  CreateAssistantResponse,
+  Assistant,
 } from "../../types/api/assistants";
 
 function buildQuery(params: Record<string, unknown>) {
@@ -19,146 +19,183 @@ function buildQuery(params: Record<string, unknown>) {
   return q ? `?${q}` : "";
 }
 
-function fdAppend(fd: FormData, key: string, value: unknown) {
-  if (value === undefined || value === null) return;
+function buildFallbacks(input: CreateAssistantFormInput) {
+  const out: any[] = [];
 
-  if (typeof value === "boolean") {
-    fd.append(key, value ? "true" : "false");
-    return;
-  }
+  const pushIfEnabled = (i: 0 | 1 | 2) => {
+    const enabled = !!(input as any)[`fallback_${i}_enabled`];
+    if (!enabled) return;
 
-  if (typeof value === "number") {
-    fd.append(key, String(value));
-    return;
-  }
+    const provider = ((input as any)[`fallback_${i}_provider`] || "").trim();
+    const model = ((input as any)[`fallback_${i}_model`] || "").trim();
+    const api_key = ((input as any)[`fallback_${i}_api_key`] || "").trim() || null;
+    const base_url = ((input as any)[`fallback_${i}_base_url`] || "").trim() || null;
 
-  fd.append(key, value as any);
+    // If provider/model empty, skip (or keep with nulls—your choice)
+    if (!provider && !model && !api_key && !base_url) return;
+
+    out.push({
+      provider: provider || null,
+      config: {
+        model: model || null,
+        api_key,
+        base_url,
+      },
+    });
+  };
+
+  pushIfEnabled(0);
+  pushIfEnabled(1);
+  pushIfEnabled(2);
+
+  return out;
 }
 
-/** ✅ single source of truth for form -> FormData */
-function buildAssistantFormData(input: CreateAssistantFormInput) {
-  const fd = new FormData();
+/**
+ * Convert your UI form shape (CreateAssistantFormInput)
+ * into the backend JSON payload (AssistantCreate / AssistantUpdate).
+*/
+function buildAssistantPayload(input: CreateAssistantFormInput): Record<string, any> {
+  const terms = (input.stt_keyterms || input.stt_keywords || "")
+    .split(/[\n,]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-  // required
-  fdAppend(fd, "name", input.name);
-  fdAppend(fd, "llm_provider", input.llm_provider);
+  const payload: Record<string, any> = {
+    name: input.name,
+    description: input.description ?? null,
+    is_active: !!input.is_active,
 
-  // basic
-  fdAppend(fd, "description", input.description);
-  fdAppend(fd, "is_active", input.is_active ?? false);
+    llm_provider: input.llm_provider,
 
-  // llm provider config
-  fdAppend(fd, "llm_provider_api_key", input.llm_provider_api_key);
-  fdAppend(fd, "llm_provider_model", input.llm_provider_model);
-  fdAppend(fd, "llm_provider_base_url", input.llm_provider_base_url);
+    llm_provider_config: {
+      api_key: input.llm_provider_api_key || null,
+      base_url: input.llm_provider_base_url || null,
+      model: input.llm_provider_model || null,
+      custom_config: {},
+    },
 
-  // service keys
-  fdAppend(fd, "deepgram_api_key", input.deepgram_api_key);
-  fdAppend(fd, "elevenlabs_api_key", input.elevenlabs_api_key);
-  fdAppend(fd, "inworld_bearer_token", input.inworld_bearer_token);
-  fdAppend(fd, "resemble_api_key", input.resemble_api_key);
+    llm_settings: {
+      temperature: input.llm_temperature ?? 0.7,
+      max_tokens: input.llm_max_tokens ?? 250,
+      system_prompt: input.llm_system_prompt ?? null,
+      welcome_message: input.welcome_message ?? null,
+      top_p: 1.0,
+      frequency_penalty: 0.0,
+      presence_penalty: 0.0,
+      stop_sequences: [],
+    },
 
-  // llm settings
-  fdAppend(fd, "llm_temperature", input.llm_temperature);
-  fdAppend(fd, "llm_max_tokens", input.llm_max_tokens);
-  fdAppend(fd, "llm_system_prompt", input.llm_system_prompt);
-  fdAppend(fd, "welcome_message", input.welcome_message);
+    tts_settings: {
+      provider: input.tts_provider ?? "elevenlabs",
+      voice_id: input.tts_voice_id || "rachel",
+      model_id: input.tts_model_id || null,
+      latency: input.tts_latency ?? 1,
+      stability: input.tts_stability ?? 0.5,
+      similarity_boost: input.tts_similarity_boost ?? 0.75,
+      style: input.tts_style ?? 0.0,
+      use_speaker_boost: !!input.tts_use_speaker_boost,
+      provider_config: {
+        language: input.tts_language ?? "en",
+        // keep any other provider-specific values you want later
+      },
+    },
 
-  // tts
-  fdAppend(fd, "tts_voice_id", input.tts_voice_id);
-  fdAppend(fd, "tts_model_id", input.tts_model_id);
-  fdAppend(fd, "tts_latency", input.tts_latency);
-  fdAppend(fd, "tts_stability", input.tts_stability);
-  fdAppend(fd, "tts_similarity_boost", input.tts_similarity_boost);
-  fdAppend(fd, "tts_style", input.tts_style);
-  fdAppend(fd, "tts_use_speaker_boost", input.tts_use_speaker_boost ?? false);
-  fdAppend(fd, "tts_provider", input.tts_provider ?? "elevenlabs");
+    stt_settings: {
+      model: input.stt_model || null,
+      language: input.stt_language || "en-US",
+      punctuate: !!input.stt_punctuate,
+      interim_results: !!input.stt_interim_results,
+      endpointing: {
+        silence_threshold: input.stt_silence_threshold ?? 500,
+        min_silence_duration: input.stt_min_silence_duration ?? 500,
+      },
+      utterance_end_ms: input.stt_utterance_end_ms ?? 1000,
+      vad_turnoff: input.stt_vad_turnoff ?? 500,
+      smart_format: !!input.stt_smart_format,
+      // NOTE: your backend expects keywords as list[Keyword] and keyterms as list[str]
+      // If your backend accepts plain lists, convert here:
 
-  // deepgram tts
-  fdAppend(fd, "tts_encoding", input.tts_encoding ?? "mulaw");
-  fdAppend(fd, "tts_sample_rate", input.tts_sample_rate ?? 8000);
+      keyterms: terms,
+      keywords: terms.map((t) => ({ keyword: t, boost: 1.0 })), // ONLY if backend expects objects
 
-  // resemble
-  fdAppend(fd, "tts_project_uuid", input.tts_project_uuid);
+      audio_denoising: !!input.stt_audio_denoising,
+    },
 
-  // stt
-  fdAppend(fd, "stt_model", input.stt_model);
-  fdAppend(fd, "stt_language", input.stt_language);
-  fdAppend(fd, "stt_punctuate", input.stt_punctuate ?? false);
-  fdAppend(fd, "stt_interim_results", input.stt_interim_results ?? false);
-  fdAppend(fd, "stt_silence_threshold", input.stt_silence_threshold);
-  fdAppend(fd, "stt_min_silence_duration", input.stt_min_silence_duration);
-  fdAppend(fd, "stt_utterance_end_ms", input.stt_utterance_end_ms);
-  fdAppend(fd, "stt_vad_turnoff", input.stt_vad_turnoff);
-  fdAppend(fd, "stt_smart_format", input.stt_smart_format ?? false);
-  fdAppend(fd, "stt_keywords", input.stt_keywords);
-  fdAppend(fd, "stt_keyterms", input.stt_keyterms);
-  fdAppend(fd, "stt_audio_denoising", input.stt_audio_denoising ?? false);
+    interruption_settings: {
+      interruption_threshold: input.interruption_threshold ?? 3,
+      min_speaking_time: input.min_speaking_time ?? 0.5,
+      interruption_cooldown: input.interruption_cooldown ?? 2.0,
+    },
 
-  // interruption
-  fdAppend(fd, "interruption_threshold", input.interruption_threshold);
-  fdAppend(fd, "min_speaking_time", input.min_speaking_time);
-  fdAppend(fd, "interruption_cooldown", input.interruption_cooldown);
+    end_call_message: input.end_call_message ?? null,
+    transfer_call_message: input.transfer_call_message ?? null,
+    idle_message: input.idle_message ?? null,
+    max_idle_messages: input.max_idle_messages ?? null,
+    idle_timeout: input.idle_timeout ?? null,
 
-  // call control
-  fdAppend(fd, "end_call_message", input.end_call_message);
-  fdAppend(fd, "transfer_call_message", input.transfer_call_message);
-  fdAppend(fd, "idle_message", input.idle_message);
-  fdAppend(fd, "max_idle_messages", input.max_idle_messages);
-  fdAppend(fd, "idle_timeout", input.idle_timeout);
+    webhook_url: input.webhook_url ?? null,
 
-  // webhook / structured data
-  fdAppend(fd, "webhook_url", input.webhook_url);
-  fdAppend(fd, "structured_data_schema", input.structured_data_schema);
-  fdAppend(fd, "structured_data_prompt", input.structured_data_prompt);
+    rag_settings: {
+      enabled: !!input.rag_enabled,
+      search_limit: input.rag_search_limit ?? 3,
+      similarity_threshold: input.rag_similarity_threshold ?? 0.7,
+      chunk_size: input.rag_chunk_size ?? 1000,
+      // keep defaults for other rag fields (backend has defaults)
+    },
 
-  // rag
-  fdAppend(fd, "rag_enabled", input.rag_enabled ?? false);
-  fdAppend(fd, "rag_search_limit", input.rag_search_limit);
-  fdAppend(fd, "rag_similarity_threshold", input.rag_similarity_threshold);
-  fdAppend(fd, "rag_chunk_size", input.rag_chunk_size);
+    tools_settings: {
+      end_call: {
+        enabled: !!input.end_call_enabled,
+        scenarios: (input.end_call_scenarios || "")
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        custom_message: input.end_call_custom_message || null,
+      },
+      transfer_call: {
+        enabled: !!input.transfer_call_enabled,
+        scenarios: (input.transfer_call_scenarios || "")
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        transfer_numbers: (input.transfer_call_numbers || "")
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        custom_message: input.transfer_call_custom_message || null,
+      },
+      custom_tools: [],
+      enabled_tools: [], // backend validator can rebuild this
+    },
 
-  // tools
-  fdAppend(fd, "end_call_enabled", input.end_call_enabled ?? false);
-  fdAppend(fd, "end_call_scenarios", input.end_call_scenarios);
-  fdAppend(fd, "end_call_custom_message", input.end_call_custom_message);
+    llm_fallback_providers: {
+      enabled: !!input.fallback_enabled,
+      fallbacks: buildFallbacks(input),
+    },
 
-  fdAppend(fd, "transfer_call_enabled", input.transfer_call_enabled ?? false);
-  fdAppend(fd, "transfer_call_scenarios", input.transfer_call_scenarios);
-  fdAppend(fd, "transfer_call_numbers", input.transfer_call_numbers);
-  fdAppend(fd, "transfer_call_custom_message", input.transfer_call_custom_message);
+    custom_settings: {
+      structured_data_prompt: input.structured_data_prompt || null,
+      structured_data_schema: input.structured_data_schema
+        ? safeParseJson(input.structured_data_schema)
+        : null,
+    },
+  };
 
-  // fallbacks
-  fdAppend(fd, "fallback_enabled", input.fallback_enabled ?? false);
+  return payload;
+}
 
-  fdAppend(fd, "fallback_0_enabled", input.fallback_0_enabled ?? false);
-  fdAppend(fd, "fallback_0_provider", input.fallback_0_provider);
-  fdAppend(fd, "fallback_0_model", input.fallback_0_model);
-  fdAppend(fd, "fallback_0_api_key", input.fallback_0_api_key);
-  fdAppend(fd, "fallback_0_base_url", input.fallback_0_base_url);
-
-  fdAppend(fd, "fallback_1_enabled", input.fallback_1_enabled ?? false);
-  fdAppend(fd, "fallback_1_provider", input.fallback_1_provider);
-  fdAppend(fd, "fallback_1_model", input.fallback_1_model);
-  fdAppend(fd, "fallback_1_api_key", input.fallback_1_api_key);
-  fdAppend(fd, "fallback_1_base_url", input.fallback_1_base_url);
-
-  fdAppend(fd, "fallback_2_enabled", input.fallback_2_enabled ?? false);
-  fdAppend(fd, "fallback_2_provider", input.fallback_2_provider);
-  fdAppend(fd, "fallback_2_model", input.fallback_2_model);
-  fdAppend(fd, "fallback_2_api_key", input.fallback_2_api_key);
-  fdAppend(fd, "fallback_2_base_url", input.fallback_2_base_url);
-
-  // languages
-  fdAppend(fd, "tts_language", input.tts_language ?? "en");
-  fdAppend(fd, "custom_voice_id", input.custom_voice_id);
-  fdAppend(fd, "elevenlabs_language", input.elevenlabs_language ?? "en");
-
-  return fd;
+function safeParseJson(v: string) {
+  try {
+    return JSON.parse(v);
+  } catch {
+    // keep it as string? I'd rather send null and let UI show an error
+    return null;
+  }
 }
 
 export const assistantsService = {
-  list(params: AssistantsListParams = {}) {
+  listPreview(params: AssistantsListParams = {}) {
     const query = buildQuery({
       page: params.page ?? 1,
       per_page: params.per_page ?? 24,
@@ -168,7 +205,21 @@ export const assistantsService = {
       sort_order: params.sort_order ?? "asc",
     });
 
-    return apiClient.request<AssistantsListResponse>(`/api/assistants${query}`);
+    return apiClient.request<AssistantsListResponse>(`/api/assistants/preview${query}`);
+  },
+
+  // if you still need full list for something else
+  listFull(params: AssistantsListParams = {}) {
+    const query = buildQuery({
+      page: params.page ?? 1,
+      per_page: params.per_page ?? 24,
+      search: params.search ?? "",
+      status: params.status ?? "",
+      sort_by: params.sort_by ?? "name",
+      sort_order: params.sort_order ?? "asc",
+    });
+
+    return apiClient.request<any>(`/api/assistants${query}`);
   },
 
   async remove(assistantId: number) {
@@ -176,23 +227,24 @@ export const assistantsService = {
   },
 
   getById(assistantId: number) {
-    return apiClient.request<AssistantDetailResponse>(`/api/v2/assistants/${assistantId}`);
+    return apiClient.request<Assistant>(`/api/assistants/${assistantId}`);
   },
 
   create(input: CreateAssistantFormInput) {
-    const fd = buildAssistantFormData(input);
-    return apiClient.request<CreateAssistantResponse>(`/api/v2/assistants/new`, {
+    const payload = buildAssistantPayload(input);
+    return apiClient.request<Assistant>(`/api/assistants`, {
       method: "POST",
-      body: fd,
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
     });
   },
 
-  /** ✅ Update existing assistant (endpoint assumed REST-style) */
   update(assistantId: number, input: CreateAssistantFormInput) {
-    const fd = buildAssistantFormData(input);
-    return apiClient.request<{ success: boolean }>(`/api/v2/assistants/${assistantId}`, {
-      method: "PUT",
-      body: fd,
+    const payload = buildAssistantPayload(input);
+    return apiClient.request<Assistant>(`/api/assistants/${assistantId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
     });
   },
 };

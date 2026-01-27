@@ -479,10 +479,10 @@ export default function AssistantAiSection({ open, onToggle, value, setField, lo
                   <div>
                     <Label>Keywords & Keyterms</Label>
                     <TextArea
-                      value={value.stt_keywords ?? ""}
-                      onChange={(v) => setField("stt_keywords", v)}
-                      rows={2}
-                      placeholder="Comma-separated keywords or keyterms..."
+                        value={value.stt_keyterms ?? ""}
+                        onChange={(v) => setField("stt_keyterms", v as any)}
+                        rows={2}
+                        placeholder="One term per line (or comma-separated)"
                     />
                   </div>
                 </div>

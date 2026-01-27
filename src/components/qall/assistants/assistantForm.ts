@@ -162,6 +162,9 @@ export function mapAssistantToForm(a: Assistant): AssistantFormState {
     return String(v);
   };
 
+  const fb = Array.isArray(fallbacks.fallbacks) ? fallbacks.fallbacks : [];
+  const getFb = (i: number) => fb[i] ?? null;
+
   return {
     ...base,
 
@@ -250,7 +253,25 @@ export function mapAssistantToForm(a: Assistant): AssistantFormState {
 
     // fallbacks
     fallback_enabled: !!fallbacks.enabled,
-    
+
+    fallback_0_enabled: !!getFb(0),
+    fallback_0_provider: getFb(0)?.provider ?? "",
+    fallback_0_model: getFb(0)?.config?.model ?? "",
+    fallback_0_api_key: getFb(0)?.config?.api_key ?? "",
+    fallback_0_base_url: getFb(0)?.config?.base_url ?? "",
+
+    fallback_1_enabled: !!getFb(1),
+    fallback_1_provider: getFb(1)?.provider ?? "",
+    fallback_1_model: getFb(1)?.config?.model ?? "",
+    fallback_1_api_key: getFb(1)?.config?.api_key ?? "",
+    fallback_1_base_url: getFb(1)?.config?.base_url ?? "",
+
+    fallback_2_enabled: !!getFb(2),
+    fallback_2_provider: getFb(2)?.provider ?? "",
+    fallback_2_model: getFb(2)?.config?.model ?? "",
+    fallback_2_api_key: getFb(2)?.config?.api_key ?? "",
+    fallback_2_base_url: getFb(2)?.config?.base_url ?? "",
+  
     // UI only
     kbFiles: [],
   };
