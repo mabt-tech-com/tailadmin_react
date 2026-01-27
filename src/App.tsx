@@ -24,9 +24,11 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/assistants" element={<Assistants />} />
+
               <Route path="/calls" element={<Calls />} />
-              <Route path="/call/:id" element={<CallDetail />} /> {/* New route */}
-              <Route path="/call" element={<Call />} />
+              <Route path="/call/:id" element={<CallDetail />} /> {/* Individual call detail */}
+              <Route path="/call" element={<Call />} /> {/* Analytics page */}
+
               <Route path="/phonenumbers" element={<PhoneNumbers />} />
               <Route path="/organization" element={<Organizations />} />
               <Route path="/profile" element={<Profile />} />
