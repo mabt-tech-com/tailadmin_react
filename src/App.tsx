@@ -35,6 +35,7 @@ export default function App() {
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/files" element={<FileManager />} />
               <Route path="/apikeys" element={<ApiKeys />} />
+
               <Route path="/assistant" element={<Assistant />} />
               <Route path="/assistants/new" element={<Assistant />} />
               <Route path="/assistants/:id" element={<Assistant />} />

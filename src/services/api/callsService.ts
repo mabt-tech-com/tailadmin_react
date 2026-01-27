@@ -17,7 +17,8 @@ import {
 
 
 // Update this line in src/services/api/callsService.ts
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://qall.io/api/v1'; //'http://localhost:9000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL ||  'http://localhost:9000/api/v1';
+// 'http://qall.io/api/v1';
 
 const STATIC_BEARER_TOKEN = import.meta.env.VITE_API_TOKEN || 'qall_uvpprwa6bmvsz31l227oft6vggrj0yau';
 
