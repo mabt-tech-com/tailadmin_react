@@ -117,7 +117,6 @@ export default function AssistantPage() {
 
         <AssistantAiSection
           open={open.ai}
-          onToggle={() => setOpen((p) => ({ ...p, ai: !p.ai }))}
           value={form}
           setField={setField}
           loading={loading || saving}

@@ -88,27 +88,6 @@ export type Assistant = {
   phone_numbers: AssistantPhoneNumber[];
 };
 
-export type AssistantDetailResponse = {
-  assistant: Assistant;
-  recent_calls: AssistantCall[];
-  telephony_provider: string | null;
-};
-
-export type CreateAssistantResponse = {
-  success: boolean;
-  assistant_id: number;
-  redirect_url: string;
-};
-
-export type CreateAssistantErrorResponse = {
-  success?: false;
-  error?: string;
-  field?: string;
-  default_schema?: string;
-};
-
-
-
 export type CreateAssistantFormInput = {
   // Basic
   name: string;

@@ -11,6 +11,7 @@ interface SelectProps {
   onChange: (value: string) => void;
   className?: string;
   value?: string;
+  disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -19,11 +20,14 @@ const Select: React.FC<SelectProps> = ({
   onChange,
   className = "",
   value = "",
+  disabled
 }) => {
+  if (disabled) return (<></>);
   return (
     <div className="relative">
       <select
-        className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
+        disabled={!!disabled}
+        className={`${disabled ? "bg-gray-100" : "dark:bg-gray-900"} h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
           value ? "text-gray-800 dark:text-white/90" : "text-gray-400 dark:text-gray-400"
         } ${className}`}
         value={value}
@@ -47,7 +51,7 @@ const Select: React.FC<SelectProps> = ({
           </option>
         ))}
       </select>
-
+      {disabled ? <></> :  
       <svg
         className="absolute text-gray-700 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none"
         width="20"
@@ -63,7 +67,7 @@ const Select: React.FC<SelectProps> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-      </svg>
+      </svg>}
     </div>
   );
 };

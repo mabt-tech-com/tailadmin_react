@@ -17,7 +17,7 @@ type ApiClientOptions = {
 export function createApiClient(options: ApiClientOptions = {}) {
   const baseUrl = options.baseUrl ?? "";
 
-  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  function buildHeaders(init: RequestInit) {
     const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
     const hasBody = init.body !== undefined && init.body !== null;
 
@@ -25,20 +25,19 @@ export function createApiClient(options: ApiClientOptions = {}) {
     const headers: Record<string, string> = {};
 
     if (token) headers["Authorization"] = `Bearer ${token}`;
-
-    // only set content-type when we send JSON
     if (hasBody && !isFormData) headers["Content-Type"] = "application/json";
 
-    // allow caller overrides
-    const mergedHeaders = {
+    return {
       ...headers,
       ...(init.headers as any),
-    };
+    } as Record<string, string>;
+  }
 
+  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const res = await fetch(`${baseUrl}${path}`, {
       ...init,
       credentials: "include",
-      headers: mergedHeaders,
+      headers: buildHeaders(init),
     });
 
     const contentType = res.headers.get("content-type") || "";
@@ -47,7 +46,11 @@ export function createApiClient(options: ApiClientOptions = {}) {
 
     if (!res.ok) {
       const message =
-        (isJson && body && typeof body === "object" && "detail" in (body as any) && (body as any).detail) ||
+        (isJson &&
+          body &&
+          typeof body === "object" &&
+          (("detail" in (body as any) && (body as any).detail) ||
+            ("error" in (body as any) && (body as any).error))) ||
         `Request failed: ${res.status}`;
       throw new ApiError(String(message), res.status, body);
     }
@@ -55,9 +58,34 @@ export function createApiClient(options: ApiClientOptions = {}) {
     return body as T;
   }
 
-  return { request };
+  // for exports that return Blob (csv/txt/etc.)
+  async function requestBlob(path: string, init: RequestInit = {}): Promise<Blob> {
+    const res = await fetch(`${baseUrl}${path}`, {
+      ...init,
+      credentials: "include",
+      headers: buildHeaders(init),
+    });
+
+    if (!res.ok) {
+      const contentType = res.headers.get("content-type") || "";
+      const isJson = contentType.includes("application/json");
+      const body = isJson ? await res.json().catch(() => null) : await res.text().catch(() => "");
+      const message =
+        (isJson &&
+          body &&
+          typeof body === "object" &&
+          (("detail" in (body as any) && (body as any).detail) ||
+            ("error" in (body as any) && (body as any).error))) ||
+        `Request failed: ${res.status}`;
+      throw new ApiError(String(message), res.status, body);
+    }
+
+    return res.blob();
+  }
+
+  return { request, requestBlob };
 }
 
 export const apiClient = createApiClient({
-  baseUrl: "http://localhost:9000",
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:9000",
 });

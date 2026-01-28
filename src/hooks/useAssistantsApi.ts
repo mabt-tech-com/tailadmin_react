@@ -3,9 +3,6 @@ import { assistantsService } from "../services/api/assistantsService";
 import type {
   AssistantsListParams,
   AssistantsListResponse,
-  AssistantDetailResponse,
-  CreateAssistantResponse,
-  CreateAssistantErrorResponse,
   CreateAssistantFormInput,
   Assistant
 } from "../types/api/assistants";

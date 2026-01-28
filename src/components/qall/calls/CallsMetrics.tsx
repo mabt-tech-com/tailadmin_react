@@ -31,27 +31,6 @@ export default function CallsMetrics() {
     fetchMetrics();
   }, [getAnalytics, getCallCount]);
 
-  if (connectionStatus === 'disconnected') {
-    return (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
-            <div>
-              <h3 className="font-semibold text-red-800 dark:text-red-300">API Connection Failed</h3>
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Unable to connect to the API. Please verify:
-                <ul className="mt-2 list-disc pl-5 space-y-1">
-                  <li>The API server is running on http://localhost:9000</li>
-                  <li>Your Bearer token is valid: qall_uvpprwa6bmvsz31l227oft6vggrj0yau</li>
-                  <li>CORS is properly configured on the server</li>
-                </ul>
-              </p>
-            </div>
-          </div>
-        </div>
-    );
-  }
-
   if (loading && !analytics) {
     return (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

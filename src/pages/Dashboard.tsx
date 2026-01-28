@@ -37,7 +37,7 @@ export default function Dashboard() {
           )}
 
           {!loading && !error && data && (
-            <>
+            <div>
               {/* <!-- Metric Group Four --> */}
               <DashboardMetrics
                 activeAssistants={data.active_assistants}
@@ -47,7 +47,7 @@ export default function Dashboard() {
                 assistantAvailability={data.assistant_availability}
               />
               {/* <!-- Metric Group Four --> */}
-            </>
+            </div>
           )}
         </div>
 

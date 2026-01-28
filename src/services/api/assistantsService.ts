@@ -2,7 +2,6 @@ import { apiClient } from "./apiClient";
 import type {
   AssistantsListParams,
   AssistantsListResponse,
-  AssistantDetailResponse,
   CreateAssistantFormInput,
   Assistant,
 } from "../../types/api/assistants";
